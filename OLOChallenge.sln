@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30309.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLOChallenge", "OLOChallenge\OLOChallenge.csproj", "{979670D5-25B3-44D4-8730-6C34D8993B2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{979670D5-25B3-44D4-8730-6C34D8993B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{979670D5-25B3-44D4-8730-6C34D8993B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{979670D5-25B3-44D4-8730-6C34D8993B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{979670D5-25B3-44D4-8730-6C34D8993B2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8DA05AC-03C3-47D5-A6E6-7F56AAF95FEC}
+	EndGlobalSection
+EndGlobal
