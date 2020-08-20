@@ -49,7 +49,8 @@
     <Compile Include="Entities\Post.cs" />
     <Compile Include="Services\JSONPlaceHolder.cs" />
     <Compile Include="Services\_ServiceBase.cs" />
-    <Compile Include="Tests\Class1.cs" />
+    <Compile Include="Tests\get_Posts.cs" />
+    <Compile Include="Tests\Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

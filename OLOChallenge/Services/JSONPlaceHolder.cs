@@ -10,9 +10,13 @@ namespace OLOChallenge.Services
 {
     public static class JSONPlaceHolder
     {
-        public static HttpResponseMessage get_Posts()
+        public static HttpResponseMessage get_Posts(string argument = null)
         {
-            var data = ServiceUtilities.IssueGetRequest("https://jsonplaceholder.typicode.com/posts");
+            var url =
+                argument == null ?
+                "https://jsonplaceholder.typicode.com/posts" :
+                "https://jsonplaceholder.typicode.com/posts" + $"/{argument}";
+            var data = ServiceUtilities.IssueGetRequest(url);
             return data;
         }
 
