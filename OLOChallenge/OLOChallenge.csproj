@@ -46,12 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\Authentication.cs" />
+    <Compile Include="Authentication\SessionObject.cs" />
     <Compile Include="Entities\Post.cs" />
+    <Compile Include="Helpers\ExtraAssert.cs" />
+    <Compile Include="Helpers\ExtraLinq.cs" />
+    <Compile Include="Helpers\Lorem.cs" />
     <Compile Include="Services\JSONPlaceHolder.cs" />
-    <Compile Include="Services\_ServiceBase.cs" />
     <Compile Include="Tests\get_Posts.cs" />
-    <Compile Include="Tests\Tests.cs" />
+    <Compile Include="Tests\post_Posts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\put_Posts.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
