@@ -50,5 +50,11 @@ namespace OLOChallenge.Services
             var data = session.IssuePutRequest("/posts" + $"/{PostID}", content);
             return data;
         }
+
+        public static HttpResponseMessage JSONPlaceHolder_delete_Posts(this SessionObject session, string PostID)
+        {
+            var data = session.IssueDeleteRequest("/posts" + $"/{PostID}");
+            return data;
+        }
     }
 }

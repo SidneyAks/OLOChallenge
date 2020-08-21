@@ -18,6 +18,7 @@ namespace OLOChallenge.Authentication
     {
         public static SessionObject UnauthenticatedSession => new SessionObject() { UserID = null };
         public static SessionObject InvalidSession => new SessionObject() { UserID = "0xBAADF00D" };
+        public static SessionObject AdminSession => new SessionObject() { UserID = "ADMIN" };
 
         public string UserID;
         public string EnvironmentHostName => "https://jsonplaceholder.typicode.com";
@@ -35,6 +36,11 @@ namespace OLOChallenge.Authentication
         public HttpResponseMessage IssuePutRequest(string endpoint, HttpContent content, Dictionary<string, string> additionalHeaders = null)
         {
             return IssueRequest(endpoint, content, additionalHeaders, HttpMethod.Put);
+        }
+
+        public HttpResponseMessage IssueDeleteRequest(string endpoint, Dictionary<string,string> additionalHeaders = null)
+        {
+            return IssueRequest(endpoint, null, additionalHeaders, HttpMethod.Delete);
         }
 
         private HttpResponseMessage IssueRequest(string url, HttpContent data, Dictionary<string, string> additionalHeaders, HttpMethod method)
