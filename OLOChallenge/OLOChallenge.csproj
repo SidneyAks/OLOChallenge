@@ -54,10 +54,12 @@
     <Compile Include="Entities\Post.cs" />
     <Compile Include="Helpers\ExtraAssert.cs" />
     <Compile Include="Helpers\ExtraLinq.cs" />
+    <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Lorem.cs" />
     <Compile Include="Services\JSONPlaceHolder.cs" />
     <Compile Include="Tests\delete_Posts.cs" />
     <Compile Include="Tests\get_Posts.cs" />
+    <Compile Include="Tests\PostsBase.cs" />
     <Compile Include="Tests\post_Posts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\put_Posts.cs" />

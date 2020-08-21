@@ -39,8 +39,35 @@ namespace OLOChallenge.Tests
     /// don't actually authenticate into this system it's impossible to test either of the scenarios.
     /// </remarks>
     [TestClass]
-    public class post_Posts
+    public class post_Posts : PostsBase
     {
+        private void CreateAndVerifyPostExists(SessionObject session, Post inputdata)
+        {
+            var data = session.JSONPlaceHolder_post_Posts(inputdata);
+            Log.WriteInfo($"Issued Request to create post {inputdata.title}, Response is {(int)data.StatusCode} {data.StatusCode}");
+            Assert.AreEqual(HttpStatusCode.Created, data.StatusCode, "Unexpected status code when creating post");
+
+            var createdPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
+                "Unable to parse response into Post");
+
+            Assert.AreEqual(inputdata.title, createdPost.title, "Post returned from creation is incorrect");
+            Assert.AreEqual(inputdata.body, createdPost.body, "Post returned from creation is incorrect");
+            Assert.AreEqual(inputdata.userId, createdPost.userId, "Post returned from creation is incorrect");
+            Log.WriteInfo($"Data returned from server is correct, new post has id {createdPost.id}");
+
+            var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(createdPost.id);
+            Log.WriteInfo($"Issued Request to retrieve post {createdPost.id}, Response is {(int)retrievedPostResponse.StatusCode} {retrievedPostResponse.StatusCode}");
+            Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving created post");
+
+            var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
+                "Unable to parse response into Post");
+
+            Assert.AreEqual(inputdata.title, retrievedPost.title, "Post saved after creation is incorrect");
+            Assert.AreEqual(inputdata.body, retrievedPost.body, "Post saved after creation is incorrect");
+            Assert.AreEqual(inputdata.userId, retrievedPost.userId, "Post saved after creation is incorrect");
+            Log.WriteInfo($"Data returned from server is correct, new post has id {createdPost.id}");
+        }
+
         [TestMethod]
         public void WithValidPostIs200AndReturnsPostsWithUpdateFields()
         {
@@ -52,25 +79,7 @@ namespace OLOChallenge.Tests
                 userId = session.UserID
             };
 
-            var data = session.JSONPlaceHolder_post_Posts(inputdata);
-            Assert.AreEqual(HttpStatusCode.Created, data.StatusCode, "Unexpected status code when creating post");
-
-            var createdPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
-                "Unable to parse response into Post");
-
-            Assert.AreEqual(inputdata.title, createdPost.title, "Post returned from creation is incorrect");
-            Assert.AreEqual(inputdata.body, createdPost.body, "Post returned from creation is incorrect");
-            Assert.AreEqual(inputdata.userId, createdPost.userId, "Post returned from creation is incorrect");
-
-            var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(createdPost.id);
-            Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving created post");
-
-            var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
-                "Unable to parse response into Post");
-
-            Assert.AreEqual(inputdata.title, retrievedPost.title, "Post saved after creation is incorrect");
-            Assert.AreEqual(inputdata.body, retrievedPost.body, "Post saved after creation is incorrect");
-            Assert.AreEqual(inputdata.userId, retrievedPost.userId, "Post saved after creation is incorrect");
+            CreateAndVerifyPostExists(session, inputdata);
         }
 
         [TestMethod]
@@ -105,25 +114,7 @@ namespace OLOChallenge.Tests
                     userId = session.UserID
                 };
 
-                var data = session.JSONPlaceHolder_post_Posts(inputdata);
-                Assert.AreEqual(HttpStatusCode.Created, data.StatusCode, "Unexpected status code when creating post");
-
-                var createdPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
-                    "Unable to parse response into Post");
-
-                Assert.AreEqual(inputdata.title, createdPost.title, "Post returned from creation is incorrect");
-                Assert.AreEqual(inputdata.body, createdPost.body, "Post returned from creation is incorrect");
-                Assert.AreEqual(inputdata.userId, createdPost.userId, "Post returned from creation is incorrect");
-
-                var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(createdPost.id);
-                Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving created post");
-
-                var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
-                    "Unable to parse response into Post");
-
-                Assert.AreEqual(inputdata.title, retrievedPost.title, "Post saved after creation is incorrect");
-                Assert.AreEqual(inputdata.body, retrievedPost.body, "Post saved after creation is incorrect");
-                Assert.AreEqual(inputdata.userId, retrievedPost.userId, "Post saved after creation is incorrect");
+                CreateAndVerifyPostExists(session, inputdata);
             }
         }
 

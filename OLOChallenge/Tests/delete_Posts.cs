@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using OLOChallenge.Authentication;
 using OLOChallenge.Entities;
 using OLOChallenge.Helpers;
@@ -13,40 +12,24 @@ using System.Threading.Tasks;
 
 namespace OLOChallenge.Tests
 {
+
     [TestClass]
-    public class delete_Posts
+    public class delete_Posts : PostsBase
     {
-        private static void CreateGenericPostForPrecondition(SessionObject session, out Post CreatedPost)
-        {
-            CreatedPost = null;
-
-            var inputdata = new Post()
-            {
-                title = "Hello World",
-                body = Lorem.Text,
-                userId = session.UserID
-            };
-
-            var data = session.JSONPlaceHolder_post_Posts(inputdata);
-
-            CreatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
-                "Unable to parse response into Post");
-
-            Assert.IsNotNull(CreatedPost, "Generic Post for test Is Null");
-        }
-
         [TestMethod]
         public void WithExistingPostIs200AndPostIsDeleted()
         {
             var session = Auth.Authenticate(4);
-            Post CreatedPost = null;
 
+            Post CreatedPost = null;
             ExtraAssert.PreconditionSucceeds(() => CreateGenericPostForPrecondition(session, out CreatedPost), "Unable to create post to delete");
 
             var data = session.JSONPlaceHolder_delete_Posts(CreatedPost.id);
+            Log.WriteInfo($"Issued Request to delete post with ID {CreatedPost.id}, Response is {(int)data.StatusCode} {data.StatusCode}");
             Assert.AreEqual(HttpStatusCode.OK, data.StatusCode);
 
             var deletedPostRequest = session.JSONPlaceHolder_get_Posts(CreatedPost.id);
+            Log.WriteInfo($"Issued Request to retrieve post with ID {CreatedPost.id}, Response is {(int)deletedPostRequest.StatusCode} {deletedPostRequest.StatusCode}");
             Assert.AreEqual(HttpStatusCode.NotFound, deletedPostRequest.StatusCode);
         }
 
@@ -64,7 +47,6 @@ namespace OLOChallenge.Tests
         {
             var session = Auth.Authenticate(4);
 
-            //Well assume that there are not this many posts in the database.
             var data = session.JSONPlaceHolder_delete_Posts("Hello World");
             Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
         }
@@ -92,6 +74,7 @@ namespace OLOChallenge.Tests
             {
                 var data = session.JSONPlaceHolder_delete_Posts(fuzz);
                 Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
+                Log.WriteInfo($"Issued Request to delete post with ID {fuzz}, Response is  {(int)data.StatusCode} {data.StatusCode}");
             }
         }
 
@@ -118,7 +101,6 @@ namespace OLOChallenge.Tests
             var session2 = Auth.Authenticate(5);
 
             Post CreatedPost = null;
-
             ExtraAssert.PreconditionSucceeds(() => CreateGenericPostForPrecondition(session1, out CreatedPost), "Unable to create post to delete");
 
             var data = session2.JSONPlaceHolder_delete_Posts(CreatedPost.id);
@@ -132,7 +114,6 @@ namespace OLOChallenge.Tests
             var session2 = SessionObject.AdminSession;
 
             Post CreatedPost = null;
-
             ExtraAssert.PreconditionSucceeds(() => CreateGenericPostForPrecondition(session1, out CreatedPost), "Unable to create post to delete");
 
             var data = session2.JSONPlaceHolder_delete_Posts(CreatedPost.id);

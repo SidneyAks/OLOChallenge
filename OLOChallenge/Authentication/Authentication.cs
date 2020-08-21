@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OLOChallenge.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,9 @@ namespace OLOChallenge.Authentication
         /// </remarks>
         public static SessionObject Authenticate(int userid)
         {
-            return new SessionObject() { UserID = userid.ToString() };
+            var so = new SessionObject() { UserID = userid.ToString() };
+            Log.WriteDebug($"Authenticated with credentials {so.UserID}");
+            return so;
         }
     }
 }

@@ -24,25 +24,36 @@ namespace OLOChallenge.Tests
     /// post object contains valid data.
     /// </remarks>
     [TestClass]
-    public class put_Posts
+    public class put_Posts : PostsBase
     {
-        private static void CreateGenericPostForPrecondition(SessionObject session, out Post CreatedPost)
+        private static void UpdatePostAndVerifyChangesSaved(SessionObject session, Post CreatedPost, Action<Post> UpdateMethod)
         {
-            CreatedPost = null;
+            UpdateMethod(CreatedPost);
 
-            var inputdata = new Post()
-            {
-                title = "Hello World",
-                body = Lorem.Text,
-                userId = session.UserID
-            };
+            var data = session.JSONPlaceHolder_put_Posts(CreatedPost.id, CreatedPost);
+            Log.WriteInfo($"Issued Request to updated post {CreatedPost.title}, Response is {(int)data.StatusCode} {data.StatusCode}");
+            Assert.AreEqual(HttpStatusCode.OK, data.StatusCode, "Unexpected status code when modifying post");
 
-            var data = session.JSONPlaceHolder_post_Posts(inputdata);
-
-            CreatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
+            var updatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
                 "Unable to parse response into Post");
 
-            Assert.IsNotNull(CreatedPost, "Generic Post for test Is Null");
+            Assert.AreEqual(CreatedPost.title, updatedPost.title, "Post returned from modification is incorrect");
+            Assert.AreEqual(CreatedPost.body, updatedPost.body, "Post returned from modification is incorrect");
+            Assert.AreEqual(CreatedPost.userId, updatedPost.userId, "Post returned from modification is incorrect");
+            Log.WriteInfo($"Data returned from server is correct, post has been successfully updated");
+
+            var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(updatedPost.id);
+            Log.WriteInfo($"Issued Request to retrieve post {updatedPost.id}, Response is {(int)retrievedPostResponse.StatusCode} {retrievedPostResponse.StatusCode}");
+            Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving modification post");
+
+            var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
+                "Unable to parse response into Post");
+
+            Assert.AreEqual(CreatedPost.title, retrievedPost.title, "Post saved after modification is incorrect");
+            Assert.AreEqual(CreatedPost.body, retrievedPost.body, "Post saved after modification is incorrect");
+            Assert.AreEqual(CreatedPost.userId, retrievedPost.userId, "Post saved after modification is incorrect");
+            Log.WriteInfo($"Data returned from server is correct, post has been successfully updated");
+
         }
 
         [TestMethod]
@@ -52,29 +63,12 @@ namespace OLOChallenge.Tests
             Post CreatedPost = null;
 
             ExtraAssert.PreconditionSucceeds(() => CreateGenericPostForPrecondition(session, out CreatedPost), "Unable to create post to modify with put verb");
-
-            CreatedPost.title += "Modified";
-            CreatedPost.body += "Modified";
-
-            var data = session.JSONPlaceHolder_put_Posts(CreatedPost.id,CreatedPost);
-            Assert.AreEqual(HttpStatusCode.OK, data.StatusCode, "Unexpected status code when modifying post");
-
-            var updatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
-                "Unable to parse response into Post");
-
-            Assert.AreEqual(CreatedPost.title, updatedPost.title, "Post returned from modification is incorrect");
-            Assert.AreEqual(CreatedPost.body, updatedPost.body, "Post returned from modification is incorrect");
-            Assert.AreEqual(CreatedPost.userId, updatedPost.userId, "Post returned from modification is incorrect");
-
-            var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(updatedPost.id);
-            Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving modification post");
-
-            var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
-                "Unable to parse response into Post");
-
-            Assert.AreEqual(CreatedPost.title, retrievedPost.title, "Post saved after modification is incorrect");
-            Assert.AreEqual(CreatedPost.body, retrievedPost.body, "Post saved after modification is incorrect");
-            Assert.AreEqual(CreatedPost.userId, retrievedPost.userId, "Post saved after modification is incorrect");
+            UpdatePostAndVerifyChangesSaved(session, CreatedPost, (p) =>
+            {
+                p.title += "Modified";
+                p.body += "Modified";
+            });
+            
         }
 
         [TestMethod]
@@ -106,28 +100,11 @@ namespace OLOChallenge.Tests
 
             foreach (var fuzz in FuzzyData)
             {
-                CreatedPost.title = fuzz;
-                CreatedPost.body = fuzz;
-
-                var data = session.JSONPlaceHolder_put_Posts(CreatedPost.id, CreatedPost);
-                Assert.AreEqual(HttpStatusCode.OK, data.StatusCode, "Unexpected status code when modifying post");
-
-                var updatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
-                    "Unable to parse response into Post");
-
-                Assert.AreEqual(CreatedPost.title, updatedPost.title, "Post returned from modification is incorrect");
-                Assert.AreEqual(CreatedPost.body, updatedPost.body, "Post returned from modification is incorrect");
-                Assert.AreEqual(CreatedPost.userId, updatedPost.userId, "Post returned from modification is incorrect");
-
-                var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(updatedPost.id);
-                Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving modification post");
-
-                var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
-                    "Unable to parse response into Post");
-
-                Assert.AreEqual(CreatedPost.title, retrievedPost.title, "Post saved after modification is incorrect");
-                Assert.AreEqual(CreatedPost.body, retrievedPost.body, "Post saved after modification is incorrect");
-                Assert.AreEqual(CreatedPost.userId, retrievedPost.userId, "Post saved after modification is incorrect");
+                UpdatePostAndVerifyChangesSaved(session, CreatedPost, (p) =>
+                {
+                    p.title += fuzz;
+                    p.body += fuzz;
+                });
             }
         }
 

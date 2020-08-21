@@ -35,7 +35,7 @@ namespace OLOChallenge.Tests
     /// to validate that the session is actuall valid.
     /// </remarks>
     [TestClass]
-    public class get_Posts
+    public class get_Posts : PostsBase
     {
         [TestMethod]
         public void WithoutArguementWithoutSessionIs200AndReturnsListOfPosts()

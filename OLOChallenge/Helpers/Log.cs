@@ -28,7 +28,7 @@ namespace OLOChallenge.Helpers
 
         private static void Write(string Text, LogLevel Level)
         {
-            Console.WriteLine($"[{Level}] {DateTime.Now:yyMMdd:HHmmSS} : {Text}");
+            Console.WriteLine($"[{Level.ToString().PadLeft(8)}] {DateTime.Now:dd/MM/yy HH:mm:ss} : {Text}");
         }
     }
 }
