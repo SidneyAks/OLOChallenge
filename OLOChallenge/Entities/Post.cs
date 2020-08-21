@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OLOChallenge.Entities
 {
-    public class Post
+    public class Post : EntityBase
     {
         /// <remarks>
         /// The actual data on the server side appears to be an int, but since we want to test invalid data

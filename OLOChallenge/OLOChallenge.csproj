@@ -48,6 +48,9 @@
   <ItemGroup>
     <Compile Include="Authentication\Authentication.cs" />
     <Compile Include="Authentication\SessionObject.cs" />
+    <Compile Include="Entities\DirectStringContent.cs" />
+    <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\Post.cs" />
     <Compile Include="Helpers\ExtraAssert.cs" />
     <Compile Include="Helpers\ExtraLinq.cs" />

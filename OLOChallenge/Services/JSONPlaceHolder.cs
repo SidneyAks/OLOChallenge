@@ -21,33 +21,23 @@ namespace OLOChallenge.Services
             return data;
         }
 
-        public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, Post post)
+        public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, IEntity post)
         {
             var content = new StringContent(
                     JsonConvert.SerializeObject(post),
                     Encoding.UTF8,
                     "application/json");
-            var data = session.IssuePostRequest("/posts", content);
+            var data = session.IssuePostRequest("/posts", post.GetStringContent());
             return data;
         }
 
-        public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, params Post[] post)
+        public static HttpResponseMessage JSONPlaceHolder_put_Posts(this SessionObject session, string PostID, IEntity post)
         {
             var content = new StringContent(
                     JsonConvert.SerializeObject(post),
                     Encoding.UTF8,
                     "application/json");
-            var data = session.IssuePostRequest("/posts", content);
-            return data;
-        }
-
-        public static HttpResponseMessage JSONPlaceHolder_put_Posts(this SessionObject session, string PostID, Post post)
-        {
-            var content = new StringContent(
-                    JsonConvert.SerializeObject(post),
-                    Encoding.UTF8,
-                    "application/json");
-            var data = session.IssuePutRequest("/posts" + $"/{PostID}", content);
+            var data = session.IssuePutRequest("/posts" + $"/{PostID}", post.GetStringContent());
             return data;
         }
 

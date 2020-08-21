@@ -74,6 +74,19 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
+        public void WithInvalidJsonReturns400Error()
+        {
+            var session = Auth.Authenticate(4);
+            var entity = new DirectStringContent() {
+                    Content = "{\"userId\":\"4\",\"id\":null,\"titl"/*e\":\"Hello World\",\"body\":\"Lorem\"}"*/,
+                    Encoding = Encoding.UTF8,
+                    MimeType = "application/json"
+                };
+            var data = session.JSONPlaceHolder_post_Posts(entity);
+            Assert.AreEqual(HttpStatusCode.BadRequest, data.StatusCode);
+        }
+
+        [TestMethod]
         public void FuzzWithValidPostIs200AndReturnsPostsWithUpdateFields()
         {
             var session = Auth.Authenticate(4);
@@ -112,52 +125,6 @@ namespace OLOChallenge.Tests
                 Assert.AreEqual(inputdata.body, retrievedPost.body, "Post saved after creation is incorrect");
                 Assert.AreEqual(inputdata.userId, retrievedPost.userId, "Post saved after creation is incorrect");
             }
-        }
-
-        [TestMethod]
-        public void WithMultipleValidPostsIs200AndReturnsPostsWithUpdateFields()
-        {
-            var session = Auth.Authenticate(4);
-            var inputdata = new Post[]
-            {
-                new Post()
-                {
-                    title = "Hello World",
-                    body = Lorem.Text,
-                    userId = session.UserID
-                },
-                new Post()
-                {
-                    title = "Hello World 2",
-                    body = Lorem.Text,
-                    userId = session.UserID
-                }
-            };
-            var data = session.JSONPlaceHolder_post_Posts(inputdata);
-            Assert.AreEqual(HttpStatusCode.Created, data.StatusCode, "Unexpected status code when creating post");
-
-            var createdPosts = ExtraAssert.Succeeds(() => (List<Post>)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(List<Post>)),
-                "Unable to parse response into list of Posts");
-
-            //Beyond here it's a little hard to debug to make sure the tests run the way I expect them to, as the API does not respond in a way I would
-            //expect it to
-
-            createdPosts.ForEachWithIndex((createdPost, index) =>
-            {
-                Assert.AreEqual(inputdata[index].title, createdPost.title, "Post returned from creation is incorrect");
-                Assert.AreEqual(inputdata[index].body, createdPost.body, "Post returned from creation is incorrect");
-                Assert.AreEqual(inputdata[index].userId, createdPost.userId, "Post returned from creation is incorrect");
-
-                var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(createdPost.id);
-                Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving created posts");
-
-                var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
-                    "Unable to parse response list of Posts");
-
-                Assert.AreEqual(inputdata[index].title, retrievedPost.title, "Post saved after creation is incorrect");
-                Assert.AreEqual(inputdata[index].body, retrievedPost.body, "Post saved after creation is incorrect");
-                Assert.AreEqual(inputdata[index].userId, retrievedPost.userId, "Post saved after creation is incorrect");
-            });
         }
 
         [TestMethod]

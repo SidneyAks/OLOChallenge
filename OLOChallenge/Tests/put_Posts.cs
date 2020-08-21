@@ -78,6 +78,20 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
+        public void WithInvalidJsonReturns400Error()
+        {
+            var session = Auth.Authenticate(4);
+            var entity = new DirectStringContent()
+            {
+                Content = "{\"userId\":\"4\",\"id\":null,\"titl"/*e\":\"Hello World\",\"body\":\"Lorem\"}"*/,
+                Encoding = Encoding.UTF8,
+                MimeType = "application/json"
+            };
+            var data = session.JSONPlaceHolder_put_Posts("1",entity);
+            Assert.AreEqual(HttpStatusCode.BadRequest, data.StatusCode);
+        }
+
+        [TestMethod]
         public void FuzzWithExistingPostAndValidDataIs200AndReturnsPostWithUpdatedFields()
         {
             var session = Auth.Authenticate(4);
