@@ -8,8 +8,16 @@ namespace OLOChallenge.Entities
 {
     public class Post
     {
-        public int userId { get; set; }
-        public int id { get; set; }
+        /// <remarks>
+        /// The actual data on the server side appears to be an int, but since we want to test invalid data
+        /// we're going to leave this as a string and trust that our consumers know what they're doing.
+        /// </remarks>
+        public string userId { get; set; }
+        /// <remarks>
+        /// The actual data on the server side appears to be an int, but since we want to test invalid data
+        /// we're going to leave this as a string and trust that our consumers know what they're doing.
+        /// </remarks>
+        public string id { get; set; }
         public string title { get; set; }
         public string body { get; set; }
     }
