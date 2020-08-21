@@ -23,20 +23,12 @@ namespace OLOChallenge.Services
 
         public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, IEntity post)
         {
-            var content = new StringContent(
-                    JsonConvert.SerializeObject(post),
-                    Encoding.UTF8,
-                    "application/json");
             var data = session.IssuePostRequest("/posts", post.GetStringContent());
             return data;
         }
 
         public static HttpResponseMessage JSONPlaceHolder_put_Posts(this SessionObject session, string PostID, IEntity post)
         {
-            var content = new StringContent(
-                    JsonConvert.SerializeObject(post),
-                    Encoding.UTF8,
-                    "application/json");
             var data = session.IssuePutRequest("/posts" + $"/{PostID}", post.GetStringContent());
             return data;
         }
