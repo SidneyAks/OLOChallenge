@@ -78,6 +78,46 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
+        public void FuzzWithExistingPostAndValidDataIs200AndReturnsPostWithUpdatedFields()
+        {
+            var session = Auth.Authenticate(4);
+            Post CreatedPost = null;
+
+            ExtraAssert.PreconditionSucceeds(() => CreateGenericPostForPrecondition(session, out CreatedPost), "Unable to create post to modify with put verb");
+
+            //Ideally we would like to run a loop here with data generated from a commercial or open source
+            //fuzz generator, but since this is a coding example I'll just make sure a few special cases
+            //are not allowed.
+            var FuzzyData = new List<string>() { "🙃", "0xBAADF00D", "eval('while(true) {}')" };
+
+            foreach (var fuzz in FuzzyData)
+            {
+                CreatedPost.title = fuzz;
+                CreatedPost.body = fuzz;
+
+                var data = session.JSONPlaceHolder_put_Posts(CreatedPost.id, CreatedPost);
+                Assert.AreEqual(HttpStatusCode.OK, data.StatusCode, "Unexpected status code when modifying post");
+
+                var updatedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
+                    "Unable to parse response into Post");
+
+                Assert.AreEqual(CreatedPost.title, updatedPost.title, "Post returned from modification is incorrect");
+                Assert.AreEqual(CreatedPost.body, updatedPost.body, "Post returned from modification is incorrect");
+                Assert.AreEqual(CreatedPost.userId, updatedPost.userId, "Post returned from modification is incorrect");
+
+                var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(updatedPost.id);
+                Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving modification post");
+
+                var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
+                    "Unable to parse response into Post");
+
+                Assert.AreEqual(CreatedPost.title, retrievedPost.title, "Post saved after modification is incorrect");
+                Assert.AreEqual(CreatedPost.body, retrievedPost.body, "Post saved after modification is incorrect");
+                Assert.AreEqual(CreatedPost.userId, retrievedPost.userId, "Post saved after modification is incorrect");
+            }
+        }
+
+        [TestMethod]
         public void WithoutSessionis401Error()
         {
             Post CreatedPost = null;

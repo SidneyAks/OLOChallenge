@@ -74,6 +74,47 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
+        public void FuzzWithValidPostIs200AndReturnsPostsWithUpdateFields()
+        {
+            var session = Auth.Authenticate(4);
+
+            //Ideally we would like to run a loop here with data generated from a commercial or open source
+            //fuzz generator, but since this is a coding example I'll just make sure a few special cases
+            //are not allowed.
+            var FuzzyData = new List<string>() { "🙃", "0xBAADF00D", "eval('while(true) {}')" };
+
+            foreach(var fuzz in FuzzyData)
+            {
+                var inputdata = new Post()
+                {
+                    title = fuzz,
+                    body = fuzz,
+                    userId = session.UserID
+                };
+
+                var data = session.JSONPlaceHolder_post_Posts(inputdata);
+                Assert.AreEqual(HttpStatusCode.Created, data.StatusCode, "Unexpected status code when creating post");
+
+                var createdPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(data.Content.ReadAsStringAsync().Result, typeof(Post)),
+                    "Unable to parse response into Post");
+
+                Assert.AreEqual(inputdata.title, createdPost.title, "Post returned from creation is incorrect");
+                Assert.AreEqual(inputdata.body, createdPost.body, "Post returned from creation is incorrect");
+                Assert.AreEqual(inputdata.userId, createdPost.userId, "Post returned from creation is incorrect");
+
+                var retrievedPostResponse = session.JSONPlaceHolder_get_Posts(createdPost.id);
+                Assert.AreEqual(HttpStatusCode.OK, retrievedPostResponse.StatusCode, "Unexpected response code when retrieving created post");
+
+                var retrievedPost = ExtraAssert.Succeeds(() => (Post)JsonConvert.DeserializeObject(retrievedPostResponse.Content.ReadAsStringAsync().Result, typeof(Post)),
+                    "Unable to parse response into Post");
+
+                Assert.AreEqual(inputdata.title, retrievedPost.title, "Post saved after creation is incorrect");
+                Assert.AreEqual(inputdata.body, retrievedPost.body, "Post saved after creation is incorrect");
+                Assert.AreEqual(inputdata.userId, retrievedPost.userId, "Post saved after creation is incorrect");
+            }
+        }
+
+        [TestMethod]
         public void WithMultipleValidPostsIs200AndReturnsPostsWithUpdateFields()
         {
             var session = Auth.Authenticate(4);
