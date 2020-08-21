@@ -4,29 +4,50 @@ using System.Net.Http;
 using System.Text;
 using Newtonsoft;
 using Newtonsoft.Json;
+using OLOChallenge.Authentication;
 using OLOChallenge.Entities;
 
 namespace OLOChallenge.Services
 {
     public static class JSONPlaceHolder
     {
-        public static HttpResponseMessage get_Posts(string argument = null)
+        public static HttpResponseMessage JSONPlaceHolder_get_Posts(this SessionObject session, string argument = null)
         {
             var url =
                 argument == null ?
-                "https://jsonplaceholder.typicode.com/posts" :
-                "https://jsonplaceholder.typicode.com/posts" + $"/{argument}";
-            var data = ServiceUtilities.IssueGetRequest(url);
+                "/posts" :
+                "/posts" + $"/{argument}";
+            var data = session.IssueGetRequest(url);
             return data;
         }
 
-        public static HttpResponseMessage post_Posts(Post post)
+        public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, Post post)
         {
-            var data = ServiceUtilities.IssuePostRequest("https://jsonplaceholder.typicode.com/posts", default);
             var content = new StringContent(
                     JsonConvert.SerializeObject(post),
                     Encoding.UTF8,
                     "application/json");
+            var data = session.IssuePostRequest("/posts", content);
+            return data;
+        }
+
+        public static HttpResponseMessage JSONPlaceHolder_post_Posts(this SessionObject session, params Post[] post)
+        {
+            var content = new StringContent(
+                    JsonConvert.SerializeObject(post),
+                    Encoding.UTF8,
+                    "application/json");
+            var data = session.IssuePostRequest("/posts", content);
+            return data;
+        }
+
+        public static HttpResponseMessage JSONPlaceHolder_put_Posts(this SessionObject session, string PostID, Post post)
+        {
+            var content = new StringContent(
+                    JsonConvert.SerializeObject(post),
+                    Encoding.UTF8,
+                    "application/json");
+            var data = session.IssuePutRequest("/posts" + $"/{PostID}", content);
             return data;
         }
     }
