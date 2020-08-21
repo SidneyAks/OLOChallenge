@@ -77,24 +77,24 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
-        public void WithNumericArgOutOfBoundsIsNotFound()
+        public void WithNonExistentPostIDIs404Error()
         {
             var data = SessionObject.UnauthenticatedSession.JSONPlaceHolder_get_Posts("0");
             Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
 
-            data = SessionObject.UnauthenticatedSession.JSONPlaceHolder_get_Posts(Int32.MaxValue.ToString());
+            data = SessionObject.UnauthenticatedSession.JSONPlaceHolder_get_Posts(Int64.MaxValue.ToString());
             Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
         }
 
         [TestMethod]
-        public void WithNonNumericArgIsError()
+        public void WithNonNumericArgIs404Error()
         {
             var data = SessionObject.UnauthenticatedSession.JSONPlaceHolder_get_Posts("Hello World");
             Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
         }
 
         [TestMethod]
-        public void WithInjectionArgIsError()
+        public void WithInjectionArgIs404Error()
         {
             //Ideally we would like to run a loop here with a commercial or open source injection tester,
             //but since this is a coding example I'll just make sure "' or 1=1" is not allowed
@@ -103,7 +103,7 @@ namespace OLOChallenge.Tests
         }
 
         [TestMethod]
-        public void WithFuzzyArgIsError()
+        public void WithFuzzyArgIs404Error()
         {
             //Ideally we would like to run a loop here with data generated from a commercial or open source
             //fuzz generator, but since this is a coding example I'll just make sure a few special cases
