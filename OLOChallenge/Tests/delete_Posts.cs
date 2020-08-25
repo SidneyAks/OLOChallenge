@@ -73,8 +73,8 @@ namespace OLOChallenge.Tests
             foreach (var fuzz in FuzzyData)
             {
                 var data = session.JSONPlaceHolder_delete_Posts(fuzz);
-                Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
                 Log.WriteInfo($"Issued Request to delete post with ID {fuzz}, Response is  {(int)data.StatusCode} {data.StatusCode}");
+                Assert.AreEqual(HttpStatusCode.NotFound, data.StatusCode);
             }
         }
 
